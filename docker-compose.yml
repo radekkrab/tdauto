@@ -1,0 +1,36 @@
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./:/var/www
+      - ./_docker/nginx/conf.d/:/etc/nginx/conf.d/
+    ports:
+      - "8976:80"
+    container_name: tdauto
+    depends_on:
+      - app
+
+  app:
+    build:
+      context: .
+      dockerfile: _docker/app/Dockerfile
+    volumes:
+      - ./:/var/www
+    ports:
+      - "5173:5173"
+    depends_on:
+      - db
+    container_name: td_app 
+
+  db:
+    image: mariadb:latest
+    container_name: mariadb_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: root
+      MYSQL_PASSWORD: 12345678
+    volumes:
+      - ./tmp/db:/var/lib/mysql
+
